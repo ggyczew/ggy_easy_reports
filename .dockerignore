@@ -1,0 +1,11 @@
+__pycache__
+_addins
+.pytest_cache
+.vscode
+.tox
+*.egg-info/
+*.egg
+htmlcov/
+build/
+dist/
+venv

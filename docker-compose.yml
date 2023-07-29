@@ -1,0 +1,89 @@
+version: '3.8'
+
+name: easy-reports
+
+services:
+  db-postgres:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - db-postgres:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: easy_reports
+      POSTGRES_PASSWORD: EasyReports#2023
+      POSTGRES_DB: easy_reports
+    ports:
+      - 5432:5432
+    networks: 
+      - ggy-easy-reports
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "postgres"]
+        timeout: 20s
+        retries: 10
+  
+  db-mysql:
+    image: mysql
+    restart: unless-stopped
+    volumes: 
+      - db-mysql:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: EasyReports#2023
+      MYSQL_DATABASE: easy_reports
+      MYSQL_USER: easy_reports
+      MYSQL_PASSWORD: EasyReports#2023
+    ports:
+      - 3306:3306
+    networks: 
+      - ggy-easy-reports
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
+
+  db-mssql:
+    build: ./scripts/mssql
+    image: ggy/mcr.microsoft.com/mssql/server:latest
+    restart: unless-stopped
+    volumes:
+      - db-mssql:/var/opt/mssql/data
+    environment:
+      ACCEPT_EULA: Y
+      # must comply password policy: Uppercase, Lowerecase, Special, Number, Min Length 10
+      SA_PASSWORD: EasyReports#2023
+      MSSQL_DB: easy_reports
+      MSSQL_USER: easy_reports
+      # must comply password policy: Uppercase, Lowerecase, Special, Number, Min Length 10
+      MSSQL_PASSWORD: EasyReports#2023
+    ports:
+      - 1433:1433
+    networks: 
+      - ggy-easy-reports
+
+  app:
+    build: .
+    image: ggy/easy-reports
+    networks: 
+      - ggy-easy-reports
+    depends_on:
+        db-postgres: 
+          condition: service_healthy
+        db-mysql:
+          condition: service_healthy
+        db-mssql:
+          condition: service_healthy
+    volumes:
+      - app:/app/reports/
+    command:  ["/bin/bash", "run.sh"]
+
+
+volumes:
+  db-postgres:
+  db-mysql:
+  db-mssql:
+  app:
+
+
+networks:
+  ggy-easy-reports: 
+    name: ggy-easy-reports
+    driver: bridge

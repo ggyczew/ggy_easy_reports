@@ -1,0 +1,16 @@
+.vscode
+venv/
+temp/
+htmlcov/
+.coverage
+.pytest_cache/
+__pycache__/
+build/
+dist/
+*.egg-info/
+*.egg
+**/defs/*/arch
+**/defs/*/cache
+**/defs/*/logs
+.tox
+_addins/

@@ -1,0 +1,68 @@
+name: Tests
+on:
+  - push
+  - pull_request
+
+jobs:
+    test:
+      runs-on: ${{ matrix.os }}
+      strategy:
+          matrix:
+              os: [ubuntu-22.04]
+              python-version: ['3.9', '3.10', '3.11']
+
+      services:
+        db-postgres: 
+          image: postgres
+          env:
+            POSTGRES_USER: easy_reports
+            POSTGRES_PASSWORD: EasyReports#2023
+            POSTGRES_DB: easy_reports
+          ports:
+            - 5432:5432
+        db-mysql: 
+          image: mysql
+          env:
+            MYSQL_USER: easy_reports
+            MYSQL_PASSWORD: EasyReports#2023
+            MYSQL_DATABASE: easy_reports
+            MYSQL_ROOT_PASSWORD: EasyReports#2023
+          ports:
+            - 3306:3306
+        db-mssql: 
+          image: mcr.microsoft.com/mssql/server
+          env:
+            ACCEPT_EULA: Y
+            # must comply password policy: Uppercase, Lowerecase, Special, Number, Min Length 10
+            SA_PASSWORD: EasyReports#2023
+          ports:
+            - 1433:1433
+
+      steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with: 
+          python-version: ${{ matrix.python-version }}
+      - name: Add hosts to /etc/hosts
+        run: |
+            sudo echo "127.0.0.1 db-postgres db-mysql db-mssql" | sudo tee -a /etc/hosts
+      - name: Install drivers
+        run:
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools
+      - name: Configure MSSQL
+        env:
+          MSSQL_DB: easy_reports
+          MSSQL_USER: easy_reports
+          # must comply password policy: Uppercase, Lowerecase, Special, Number, Min Length 10
+          MSSQL_PASSWORD: EasyReports#2023
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S db-mssql -U sa -P EasyReports#2023 -d master -i scripts/mssql/setup.sql
+      - name: Install dependencies
+        run:
+          python -m pip install --upgrade pip
+          pip install tox tox-gh-actions
+      
+      - name: Test with Tox
+        run: tox
+            

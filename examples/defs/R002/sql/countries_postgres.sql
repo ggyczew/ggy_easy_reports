@@ -1,0 +1,1 @@
+select *, null rating from er_countries

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "easy-reports"
+version = "1.0.0"
+description = "Simplified Report configuration, generation and distribution"
+readme = "README.md"
+requires-python = ">=3.9.0"
+license = { text = "MIT" }
+authors = [{ name = "Grzegorz Gyczew", email = "ggyczew@gmail.com" }]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "pandas >= 1.5.2",
+    "XlsxWriter >= 3.0.3",
+    "pyarrow >=11.0.0",
+    "SQLAlchemy>=2.0.4",
+    "click>=8.1.3",
+    "pyodbc>=4.0.35",
+    "psycopg2-binary>=2.9.5",
+    "pymysql>=1.0.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest >= 7.2.0", "pytest-cov[all]"]
+
+[project.scripts]
+easy-reports = "easy_reports.cli:main"
+
+[project.urls]
+#homepage = "https://example.com"
+#documentation = "https://readthedocs.org"
+repository = "https://github.com/ggyczew/ggy_easy_reports"
+changelog = "https://github.com/ggyczew/ggy_easy_reports/main/CHANGELOG.md"
+
+
+# [tool.pytest.ini_options]
+# testpaths = ["tests"]
+# filterwarnings = ["error"]
+
+[tool.flake8]
+ignore = ['E231', 'E241']
+per-file-ignores = ['__init__.py:F401']
+max-line-length = 88
+count = true
