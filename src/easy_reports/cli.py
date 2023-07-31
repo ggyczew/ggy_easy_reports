@@ -1,5 +1,6 @@
 import click
 from easy_reports import EasyReport
+from pathlib import Path
 
 
 @click.group()
@@ -19,7 +20,9 @@ def create(symbol):
     click.echo(f"Creating report {symbol}...")
 
     app = EasyReport()
-    app.base_config.from_pyfile('settings.py')
+
+    if Path('settings.py').exists():
+        app.base_config.from_pyfile('settings.py')
     app.create_boilerplate(symbol)
 
 

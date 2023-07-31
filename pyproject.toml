@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "easy-reports"
-version = "1.0.0"
+version = "1.0.1"
 description = "Simplified Report configuration, generation and distribution"
 readme = "README.md"
 requires-python = ">=3.9.0"
